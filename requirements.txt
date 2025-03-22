@@ -5,6 +5,7 @@ ipykernel
 sqlalchemy
 psycopg2
 dlt[duckdb]
+dlt[filesystem]
 dbt-core
 dbt-postgres
 sqlfluff-templater-dbt
