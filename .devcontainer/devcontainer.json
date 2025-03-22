@@ -1,0 +1,32 @@
+{
+	"name": "DE Zoomcamp project",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+
+
+    // Path is relative to the devcontainer.json file.
+    "dockerFile": "../DockerFile",
+    // "dockerComposeFile": "../compose.yml",
+    // "service": "devcontainer",
+    "workspaceFolder": "/workspaces/",
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "terminal.integrated.shell.linux": "/bin/bash",
+      },
+        "extensions": [
+          "ms-python.python",
+          "streetsidesoftware.code-spell-checker", 
+          "autoDocstring",
+          "markdownlint",
+          "ms-python.pylint",
+          "ms-toolsai.jupyter",
+          "ms-toolsai.vscode-jupyter-powertoys",
+          "ms-azuretools.vscode-docker",
+          "hashicorp.terraform",
+          "innoverio.vscode-dbt-power-user",
+  
+      ]
+      }
+    },
+    
+}
