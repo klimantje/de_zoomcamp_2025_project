@@ -1,2 +1,0 @@
-[sources.filesystem]
-bucket_url='./parquet_files'

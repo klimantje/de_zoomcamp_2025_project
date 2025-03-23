@@ -8,5 +8,6 @@ dlt[duckdb]
 dlt[filesystem]
 dbt-core
 dbt-postgres
+dbt-duckdb
 sqlfluff-templater-dbt
 nbstripout
