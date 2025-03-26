@@ -1,0 +1,8 @@
+sources:
+  - name: tfl
+    meta:
+      external_location: "./data/usage-stats/*.parquet"
+    tables:
+      - name: journeys
+        config:
+          external_location: "read_parquet('/workspaces/de_zoomcamp_2025_project/data/usage-stats/*.parquet', union_by_name=True)"
