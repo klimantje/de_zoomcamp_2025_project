@@ -1,5 +1,5 @@
-id: what-a-nice-flow
-namespace: company.team
+id: dbt-bigquery
+namespace: system
 
 tasks:
   - id: git

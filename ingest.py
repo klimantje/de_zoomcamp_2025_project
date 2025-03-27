@@ -38,7 +38,6 @@ final_cols = ["rental_id", "bike_id", "bike_model", "start_station_id", "start_s
 
 
 def clean_file(file_path:str, parquet_path:str):
-    logger.info(f"ingesting {file_path}")
     raw_df = duckdb.read_csv(file_path, normalize_names=True)
     if 'duration' in raw_df.columns:
         raw_df = duckdb.sql("select * REPLACE duration*1000 as duration from raw_df")
@@ -52,10 +51,11 @@ def clean_file(file_path:str, parquet_path:str):
 
 # %%
 def clean_and_write_files():
+    logger = logging.Logger(name="journey_ingester", level="INFO")
     pattern= re.compile(r'usage-stats/.*Journey.*Data.*.csv')
     files_dict = get_files_dict()
     for file in files_dict:
-        logger.info(file)
+        logger.info(f"ingesting {file}")
         if pattern.match(file["Key"]) and file["LastModified"].year>2020:
             file_key = file["Key"]
             csv_path = f"s3://cycling.data.tfl.gov.uk/{file_key}"

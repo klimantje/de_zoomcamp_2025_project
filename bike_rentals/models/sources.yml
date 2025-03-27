@@ -4,5 +4,27 @@ sources:
       external_location: "./data/usage-stats/*.parquet"
     tables:
       - name: journeys
+        description: Rental bike journeys from 2020 till now in London
         config:
           external_location: "read_parquet('/workspaces/de_zoomcamp_2025_project/data/usage-stats/*.parquet', union_by_name=True)"
+        columns:
+          - name: rental_id
+            description: Unique identifier of the bike rental
+          - name: bike_id
+            description: Unique identifier of the bike
+          - name: bike_model
+            description: Identifies the type of bike rented
+          - name: start_station_id
+            description: Unique identifier of the start station
+          - name: start_station
+            description: Name of the start station
+          - name: end_station_id
+            description: Unique identifier of the end station
+          - name: end_station
+            description: Unique identifier of the end station
+          - name: start_date
+            description: Start timestamp of the ride
+          - name: end_date
+            description: End timestamp of the ride
+          - name: total_duration_ms
+            description: Duration of the ride in milliseconds

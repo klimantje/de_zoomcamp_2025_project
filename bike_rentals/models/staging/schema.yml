@@ -1,0 +1,32 @@
+models:
+    - name: stg_tfl_journeys
+      description: Rental bike journeys from 2020 till now in London
+      config:
+        external_location: "read_parquet('/workspaces/de_zoomcamp_2025_project/data/usage-stats/*.parquet', union_by_name=True)"
+      columns:
+        - name: rental_id
+          description: Unique identifier of the bike rental
+          tests:
+            - unique
+            - not_null
+        - name: bike_id
+          description: Unique identifier of the bike
+        - name: bike_model
+          description: Identifies the type of bike rented
+          tests:
+            - accepted_values: 
+                values: ['UNKNOWN', 'CLASSIC', 'PBSC_EBIKE' ]
+        - name: start_station_id
+          description: Unique identifier of the start station
+        - name: start_station
+          description: Name of the start station
+        - name: end_station_id
+          description: Unique identifier of the end station
+        - name: end_station
+          description: Unique identifier of the end station
+        - name: ride_started
+          description: Start timestamp of the ride
+        - name: ride_ended
+          description: End timestamp of the ride
+        - name: total_duration_ms
+          description: Duration of the ride in milliseconds

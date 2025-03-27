@@ -4,9 +4,8 @@
 
 
     // Path is relative to the devcontainer.json file.
-    "dockerFile": "../DockerFile",
-    // "dockerComposeFile": "../compose.yml",
-    // "service": "devcontainer",
+    "dockerComposeFile": "../compose.yml",
+    "service": "devcontainer",
     "workspaceFolder": "/workspaces/",
     "customizations": {
       "vscode": {
