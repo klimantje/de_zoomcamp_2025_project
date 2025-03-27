@@ -37,7 +37,7 @@ services:
     user: "root"
     command: server standalone
     volumes:
-      - kestra-data:/app/storage
+      - ./kestra-data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/kestra-wd:/tmp/kestra-wd
       - /Users/ai49st/Developer/de_zoomcamp_2025_project/flows:/local_flows
@@ -81,6 +81,8 @@ services:
                   - ./flows
                   - flows
                   - /local_flows
+                  - /Users/ai49st/Developer/de_zoomcamp_2025_project/flows
+                  - /app/storage/company/_files/
     ports:
       - "8081:8080"
     depends_on:
