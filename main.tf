@@ -123,7 +123,7 @@ resource "google_bigquery_table" "default" {
     # Google Cloud Storage bucket.
     autodetect    = false
     source_format = "PARQUET"
-    source_uris   = ["gs://bikes_rental_zc/raw/journeys/*"]
+    source_uris   = ["gs://bikes_rental_zc/raw/journeys/*.parquet"]
     # This configures Hive partitioning for the BigQuery table,
   }
   
