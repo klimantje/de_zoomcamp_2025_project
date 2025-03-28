@@ -1,5 +1,5 @@
 {%macro string_to_timestamp(column_name) %}
 
-    try_strptime( {{ column_name }} , ['%d/%m/%Y %H:%M:%S', '%m/%d/%Y %H:%M', '%Y-%m-%d %H:%M:%S'])
+    COALESCE(PARSE_TIMESTAMP('%d/%m/%Y %H:%M', {{ column_name }}),PARSE_TIMESTAMP('%Y-%m-%d %H:%M:%S', {{ column_name }}) )
 
 {%endmacro %}

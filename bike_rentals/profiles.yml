@@ -1,0 +1,26 @@
+bike_rentals:
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/dev.duckdb
+      schema: bikes
+      threads: 1
+
+    prod:
+      type: duckdb
+      path: ../data/prod.duckdb
+      schema: bikes
+      threads: 4
+
+  target: dev
+
+gcp:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: dezoomcamp2025-454617
+      dataset: bike_rentals
+      threads: 4 # Must be a value of 1 or greater
+      keyfile: ../.creds/gcp_creds.json

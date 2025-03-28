@@ -1,12 +1,9 @@
 sources:
   - name: tfl
-    meta:
-      external_location: "./data/usage-stats/*.parquet"
+    schema: bike_rentals
     tables:
-      - name: journeys
+      - name: raw_journeys  
         description: Rental bike journeys from 2020 till now in London
-        config:
-          external_location: "read_parquet('/workspaces/de_zoomcamp_2025_project/data/usage-stats/*.parquet', union_by_name=True)"
         columns:
           - name: rental_id
             description: Unique identifier of the bike rental

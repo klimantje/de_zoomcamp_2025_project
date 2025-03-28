@@ -2,7 +2,10 @@ from google.cloud import storage
 import os
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/workspaces/de_zoomcamp_2025_project/.creds/gcp_creds.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
+    "/workspaces/de_zoomcamp_2025_project/.creds/gcp_creds.json"
+)
+
 
 def upload_to_gcs(bucket, object_name, local_file):
     """
@@ -18,4 +21,9 @@ def upload_to_gcs(bucket, object_name, local_file):
     blob = bucket.blob(object_name)
     blob.upload_from_filename(local_file)
 
-upload_to_gcs("bikes_rental_zc", "raw/2025_journeys.parquet",  "/workspaces/de_zoomcamp_2025_project/data/2025_journeys.parquet")
+
+upload_to_gcs(
+    "bikes_rental_zc",
+    "raw/2025_journeys.parquet",
+    "/workspaces/de_zoomcamp_2025_project/data/2025_journeys.parquet",
+)

@@ -1,5 +1,18 @@
+{{
+ config(
+   materialized = 'incremental',
+   incremental_strategy = 'insert_overwrite',
+   partition_by = {
+     'field': 'ride_started', 
+     'data_type': 'timestamp',
+     'granularity': 'day'
+   }
+ )
+}}
+
+
 with source as (
-        select * from {{ source('tfl', 'journeys') }}
+        select * from {{ source('tfl', 'raw_journeys') }}
   ),
   renamed as (
   select
@@ -12,10 +25,15 @@ with source as (
       end_station, 
       start_date,
       end_date,
-      try_strptime(start_date, ['%d/%m/%Y %H:%M', '%m/%d/%Y %H:%M', '%Y-%m-%d %H:%M:%S']) as ride_started,
-      try_strptime(end_date, ['%d/%m/%Y %H:%M', '%m/%d/%Y %H:%M', '%Y-%m-%d %H:%M:%S']) as ride_ended,
+      {{ string_to_timestamp('start_date')}} as ride_started,
+      {{ string_to_timestamp('end_date')}} as ride_ended,
       total_duration_ms
   from source 
   )
 select * from renamed
-    
+   {% if is_incremental() %}
+
+    -- recalculate latest day's data + previous
+    -- NOTE: The _dbt_max_partition variable is used to introspect the destination table
+    where date(ride_started) >= date_sub(date(_dbt_max_partition), interval 1 day)
+    {% endif %}

@@ -3,11 +3,14 @@ jupyter
 pyarrow
 ipykernel
 sqlalchemy
-psycopg2
+# psycopg2
 dlt[duckdb]
 dlt[filesystem]
+dlt[gs]
 dbt-core
-dbt-postgres
+# dbt-postgres
 dbt-duckdb
+dbt-bigquery
 sqlfluff-templater-dbt
 nbstripout
+boto3
