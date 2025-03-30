@@ -83,9 +83,12 @@ Alternatively, you can do the above manually in your GCP console.
 
 ## Next steps and improvements
 
-- Currently the pipeline, although using mostly GCP is running from local. It would be good to deploy this to a Cloud VM.
+- Currently the pipeline, although using mostly GCP is running from local. 
+  - It would be good to deploy this to a Cloud VM.
+  - Something like transferservice can be used to transfer the raw files to GCS and perform all the processing there.
 - The bike data can be further enriched with e.g. weather data to provide better insights.
 - There is also still a lot of other data feeds available on TFL which can be used to extend the pipeline.
+- The bike location data is actually streaming, but now only used to periodically update the bike locations.
 
 
 
