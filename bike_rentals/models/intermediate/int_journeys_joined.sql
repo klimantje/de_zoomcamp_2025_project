@@ -50,12 +50,11 @@ journeys_start.trip_duration_mins,
 journeys_start.start_station_id,
 journeys_start.start_station,
 journeys_start.start_bike_point_id,
-journeys_start.start_location_longitude,
-journeys_start.start_location_lattitude,
+journeys_start.start_geo_location,
 COALESCE(locations.location_id, journeys_start.end_station_id) as end_station_id, 
 COALESCE(locations.location_name, journeys_start.end_station) as end_station,
 locations.bike_point_id as end_bike_point_id, 
-locations.geo_location as end_geo_location,
+locations.geo_location as end_geo_location 
 from journeys_start
 left join locations
 on (journeys_start.end_station_id = locations.location_id
@@ -77,8 +76,8 @@ start_geo_location,
 end_station_id,
 end_station,
 end_bike_point_id,
-end_geo_location
-ST_DISTANCE(ST_GEOGPOINT(start_location_longitude, start_location_lattitude), ST_GEOGPOINT(end_location_longitude, end_location_lattitude)) as trip_distance_in_meters
+end_geo_location,
+ROUND(ST_DISTANCE(start_geo_location, end_geo_location) ) as trip_distance_in_meters
 from journeys_complete
 
 

@@ -8,9 +8,8 @@ dlt[duckdb]
 dlt[filesystem]
 dlt[gs]
 dbt-core
-# dbt-postgres
-dbt-duckdb
 dbt-bigquery
 sqlfluff-templater-dbt
 nbstripout
 boto3
+lxml

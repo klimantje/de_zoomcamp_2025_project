@@ -50,7 +50,19 @@ resource "google_bigquery_table" "default" {
   dataset_id = google_bigquery_dataset.dataset.dataset_id
   project    = "dezoomcamp2025-454617"
   table_id   = "raw_journeys"
-  schema = <<EOF
+
+  external_data_configuration {
+    # This defines an external data configuration for the BigQuery table
+    # that reads Parquet data from the raw directory of our
+    # Google Cloud Storage bucket.
+    autodetect    = false
+    source_format = "PARQUET"
+    source_uris   = ["gs://bikes_rental_zc/raw/journeys/*.parquet"]
+    hive_partitioning_options {
+      mode              = "CUSTOM"
+      source_uri_prefix = "gs://bikes_rental_zc/raw/journeys/{dt:STRING}"
+    }
+    schema = <<EOF
     [
     {
         "name": "rental_id",
@@ -114,14 +126,8 @@ resource "google_bigquery_table" "default" {
     }
     ]
     EOF
-  external_data_configuration {
-    # This defines an external data configuration for the BigQuery table
-    # that reads Parquet data from the raw directory of our
-    # Google Cloud Storage bucket.
-    autodetect    = false
-    source_format = "PARQUET"
-    source_uris   = ["gs://bikes_rental_zc/raw/journeys/*.parquet"]
   }
+
   
 
 }
@@ -139,6 +145,7 @@ resource "google_bigquery_table" "locations" {
     autodetect    = false
     source_format = "PARQUET"
     source_uris   = ["gs://bikes_rental_zc/raw/locations/*.parquet"]
+    
 
   }
   

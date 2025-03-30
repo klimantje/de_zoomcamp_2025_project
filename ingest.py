@@ -9,15 +9,24 @@ import os
 from google.cloud import storage
 import requests
 from lxml import etree
+from datetime import datetime
+import argparse
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".creds/gcp_creds.json"
 GCP_BUCKET = "bikes_rental_zc"
-GCP_JOURNEYS_PREFIX = "raw/journeys/"
+GCP_JOURNEYS_PREFIX = "raw/journeys"
+# GCP_JOURNEYS_PREFIX = "test/journeys"
 GCP_LOCATIONS_PREFIX = "raw/locations/locs.parquet"
 
+def parse_date(date_str):
+    """parse date string"""
+    if date_str.endswith('Z'):
+        return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+    return datetime.fromisoformat(date_str)
 
 def get_files_dict():
+    """Retrieve list of files from tfl s3 bucket"""
     s3 = boto3.client("s3", aws_access_key_id="", aws_secret_access_key="")
     s3._request_signer.sign = lambda *args, **kwargs: None
 
@@ -52,9 +61,10 @@ final_cols = [
     "total_duration_ms",
 ]
 
-def clean_file(file_path: str, parquet_path: str = None):
-    """Read the source file in s3, normalize columns and rename where needed.
-    Source files do not all have the same format    
+def clean_file(logger, file_path: str, parquet_path: str = None):
+    """
+    Read the source file in s3, normalize columns and rename where needed.
+    Source files do not all have the same format so we do some preprocessing with duckdb    
     """
     raw_df = duckdb.read_csv(
         file_path, normalize_names=True, auto_type_candidates=["VARCHAR"]
@@ -75,21 +85,25 @@ def clean_file(file_path: str, parquet_path: str = None):
 
 
 # %%
-def clean_and_write_files(logger):
+def clean_and_write_files(logger, trigger_date='2020-01-01'):
+    """Clean files which arrived after trigger date and upload to gcs as parquet"""
     pattern = re.compile(r"usage-stats/.*Journey.*Data.*.csv")
     files_dict = get_files_dict()
     for file in files_dict:
+        last_modified = file["LastModified"]
+        compare_date = parse_date(trigger_date).astimezone(last_modified.tzinfo)
         logger.info(f"ingesting {file}")
-        if pattern.match(file["Key"]) and file["LastModified"].year > 2020:
+        if pattern.match(file["Key"]) and file["LastModified"]>compare_date:
             file_key = file["Key"]
             csv_path = f"s3://cycling.data.tfl.gov.uk/{file_key}"
             file_name= file_key.split("/")[-1]
+            partition_path = f"dt={last_modified.year}-{last_modified.month:02d}-{last_modified.day:02d}"
             parquet_path = f"./data/{file_name}".replace(".csv", ".parquet")
-            clean_file(csv_path, parquet_path)
+            clean_file(logger, csv_path, parquet_path)
             print(f"cleaned {file_name}")
             upload_to_gcs(
                 GCP_BUCKET,
-                f"{GCP_JOURNEYS_PREFIX}/{file_name}".replace(".csv", ".parquet"),
+                f"{GCP_JOURNEYS_PREFIX}/{partition_path}/{file_name}".replace(".csv", ".parquet"),
                 parquet_path,
             )
             print(f"uploaded to gcs")
@@ -97,6 +111,7 @@ def clean_and_write_files(logger):
 
 def upload_to_gcs(bucket, object_name, local_file):
     """
+    Upload files to gcs bucket
     Ref: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python
     """
     # # WORKAROUND to prevent timeout for files > 6 MB on 800 kbps upload speed.
@@ -123,12 +138,16 @@ def ingest_locations(url:str="https://tfl.gov.uk/tfl/syndication/feeds/cycle-hir
     df_loc.to_parquet(f"gs://{GCP_BUCKET}/{GCP_LOCATIONS_PREFIX}")
 
 
-    
-
+def main():
+    """Run ingestion of the bike journey and location data"""
+    parser = argparse.ArgumentParser(description='Ingest journey and location data after a given trigger date')
+    parser.add_argument('trigger_date', nargs='?', default='2020-01-01', help='Date to compare against in ISO format')
+    args = parser.parse_args()    
+    logger = logging.Logger("ingestion", level="INFO")
+    clean_and_write_files(logger, args.trigger_date)
+    ingest_locations()
 
 
 # %%
 if __name__ == "__main__":
-    logger = logging.Logger("ingestion", level="INFO")
-    # clean_and_write_files(logger)
-    ingest_locations()
+    main()

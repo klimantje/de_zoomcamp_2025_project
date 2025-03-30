@@ -115,3 +115,5 @@ models:
       - name: geo_location
         data_type: geography
         quote: true
+        data_tests:
+          - not_null
