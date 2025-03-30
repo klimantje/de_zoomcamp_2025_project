@@ -7,9 +7,14 @@ import re
 import logging
 import os
 from google.cloud import storage
+import requests
+from lxml import etree
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".creds/gcp_creds.json"
+GCP_BUCKET = "bikes_rental_zc"
+GCP_JOURNEYS_PREFIX = "raw/journeys/"
+GCP_LOCATIONS_PREFIX = "raw/locations/locs.parquet"
 
 
 def get_files_dict():
@@ -83,8 +88,8 @@ def clean_and_write_files(logger):
             clean_file(csv_path, parquet_path)
             print(f"cleaned {file_name}")
             upload_to_gcs(
-                "bikes_rental_zc",
-                f"raw/journeys/{file_name}".replace(".csv", ".parquet"),
+                GCP_BUCKET,
+                f"{GCP_JOURNEYS_PREFIX}/{file_name}".replace(".csv", ".parquet"),
                 parquet_path,
             )
             print(f"uploaded to gcs")
@@ -105,7 +110,25 @@ def upload_to_gcs(bucket, object_name, local_file):
     blob.upload_from_filename(local_file)
 
 
+def ingest_locations(url:str="https://tfl.gov.uk/tfl/syndication/feeds/cycle-hire/livecyclehireupdates.xml"):
+    """
+    Ingest bike rental location data from the live feed and upload as parquet to 
+    As we don't use the live data, we will also only update this periodically to account for new locations    
+    """
+    res = requests.get(url)
+    locs = res.content
+    last_updated = etree.fromstring(locs).attrib.get('lastUpdate')
+    df_loc = pd.read_xml(locs, dtype=object)
+    df_loc["last_updated"] = last_updated
+    df_loc.to_parquet(f"gs://{GCP_BUCKET}/{GCP_LOCATIONS_PREFIX}")
+
+
+    
+
+
+
 # %%
 if __name__ == "__main__":
     logger = logging.Logger("ingestion", level="INFO")
-    clean_and_write_files(logger)
+    # clean_and_write_files(logger)
+    ingest_locations()

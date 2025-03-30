@@ -25,3 +25,31 @@ sources:
             description: End timestamp of the ride
           - name: total_duration_ms
             description: Duration of the ride in milliseconds
+      - name: raw_locations
+        description: Rental bike locations info
+        columns:
+          - name: id
+            description: Unique id of the bike point
+          - name: name
+            description: Name of the bike point
+          - name: terminalName
+            description: Numerical identifier for the bike point
+          - name: lat
+            description: Latitude
+          - name: lon
+            description: Longitude
+          - name: installed
+          - name: locked
+          - name: installDate
+          - name: removalDate
+          - name: temporary
+          - name: nbBikes
+          - name: nbStandardBikes
+          - name: nbEBikes
+            description: Available number of ebikes at moment of update.
+          - name: nbEmptyDocks
+            description: Availabel number of docks at moment of update.
+          - name: nbDocks
+            description: Total amount of docks in this location
+          - name: last_updated
+            description: Unix timestamp when the feed was last updated

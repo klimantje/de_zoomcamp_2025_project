@@ -12,10 +12,8 @@ provider "google" {
     credentials = ".creds/gcp_creds.json"
 }
 
-
-
 resource "google_storage_bucket" "data-lake-bucket" {
-  name          = "bike_rentals_test"
+  name          = "bikes_rental_zc"
   project    = "dezoomcamp2025-454617"
   location      = "europe-west4"
 
@@ -47,8 +45,7 @@ resource "google_bigquery_dataset" "dataset" {
 }
 
 
-# This creates a BigQuery table with partitioning and automatic metadata
-# caching.
+# This creates a BigQuery table with partitioning 
 resource "google_bigquery_table" "default" {
   dataset_id = google_bigquery_dataset.dataset.dataset_id
   project    = "dezoomcamp2025-454617"
@@ -119,13 +116,30 @@ resource "google_bigquery_table" "default" {
     EOF
   external_data_configuration {
     # This defines an external data configuration for the BigQuery table
-    # that reads Parquet data from the publish directory of the default
+    # that reads Parquet data from the raw directory of our
     # Google Cloud Storage bucket.
     autodetect    = false
     source_format = "PARQUET"
     source_uris   = ["gs://bikes_rental_zc/raw/journeys/*.parquet"]
-    # This configures Hive partitioning for the BigQuery table,
   }
   
 
+}
+
+
+resource "google_bigquery_table" "locations" {
+  dataset_id = google_bigquery_dataset.dataset.dataset_id
+  project    = "dezoomcamp2025-454617"
+  table_id   = "raw_locations"
+  
+  external_data_configuration {
+    # This defines an external data configuration for the BigQuery table
+    # that reads Parquet data from the raw directory of our
+    # Google Cloud Storage bucket.
+    autodetect    = false
+    source_format = "PARQUET"
+    source_uris   = ["gs://bikes_rental_zc/raw/locations/*.parquet"]
+
+  }
+  
 }
