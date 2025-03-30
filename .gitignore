@@ -175,7 +175,7 @@ cython_debug/
 .creds/*
 !.creds/.gitkeep
 *.duckdb
-data/
+data/*
 !data/.gitkeep
 notebooks/.dlt/secrets.toml
 *.parquet
