@@ -1,0 +1,11 @@
+
+    
+    
+
+
+
+select `bike_point_id`
+from `dezoomcamp2025-454617`.`bike_rentals`.`stg_tfl_locations`
+where `bike_point_id` is null
+
+
