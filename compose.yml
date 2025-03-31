@@ -38,7 +38,7 @@ services:
       - ./kestra-data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/tmp/kestra-wd:/tmp/kestra-wd
-      - /Users/ai49st/Developer/de_zoomcamp_2025_project/flows:/local_flows
+      - ./flows:/local_flows
       - ~/.creds:/.creds
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: /.creds/gcp_creds.json
