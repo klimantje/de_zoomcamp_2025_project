@@ -13,7 +13,7 @@ Data pipeline for the data engineering zoomcamp project
   - [Setup](#setup)
     - [GCP setup](#gcp-setup)
     - [If you want to run the scripts separately](#if-you-want-to-run-the-scripts-separately)
-    - [Kestra](#kestra-1)
+    - [Run everything via kestra](#run-everything-via-kestra)
   - [Running the pipeline](#running-the-pipeline)
       - [Running all parts separately](#running-all-parts-separately)
       - [Running the flow in kestra](#running-the-flow-in-kestra)
@@ -119,13 +119,17 @@ Alternatively, you can do the above manually in your GCP console.
 - Alternatively, if you prefer running this in a docker container or via VSCode devcontainer, use the included `devcontainer.json`
 - Make sure environment variables are set: fill the `.env_template` and rename to `.env`. Then `source .env` will set the environment variables. 
 
-### Kestra
+### Run everything via kestra
 
-Kestra needs access to the google credentials as well. Therefore we also set `GOOGLE_APPLICATION_CREDENTIALS` in the docker compose.
+Kestra needs access to the environment variables as well. Therefore we also set `GOOGLE_APPLICATION_CREDENTIALS`  and other variables in the [docker compose](compose.yml)
 
 Make sure the volume mapping refers to your local credential folder if you put that somewhere else than `.creds/gcp_creds.json`
 
-In the docker-compose file we refer to the env_file that kestra has to load. In this, we need to put the 
+To read more on environment variables and docker compose, see [this](https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/)
+
+Run `docker-compose --env-file .env up`
+
+
 
 ## Running the pipeline
 

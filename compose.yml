@@ -44,6 +44,8 @@ services:
       - ~/.creds:/.creds
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: /.creds/gcp_creds.json
+      GCP_BUCKET: ${GCP_BUCKET}
+      BIGQUERY_DATASET: ${BIGQUERY_DATASET}
       KESTRA_CONFIGURATION: |
         datasources:
           postgres:
