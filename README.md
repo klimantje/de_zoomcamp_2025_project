@@ -40,9 +40,13 @@ Bike journey data is enriched with bike rental locations data to provide insight
 
 ![architecture](./assets/images/architecture.drawio.png)
 
+- a [python script](ingest.py) is used to ingest data from S3 and an XML feed to GCS. An optional date can be given to limit the files loaded.
+- [dbt](/bike_rentals/) is used to transform the data in bigquery
+- [looker studio](https://lookerstudio.google.com/reporting/fd3e4b28-a73f-4fdf-b12e-177f75b2c0f7) is used for the dashboard
+
 ### Terraform
 
-We used terraform as IAC to set up the 
+We used [terraform](main.tf) as IAC to set up the 
 
 - GCS bucket
 - Bigquery dataset
@@ -71,7 +75,7 @@ The whole data pipeline from ingestion to transformations is orchestrated via Ke
   
 First the repository is cloned, then the python ingestion task runs and lastly the dbt project is built creating the transformed tables.
 
-The flow is scheduled with a monthly trigger and only s3 data 
+The [flow](flows/dbt_bq_flow.yml) is scheduled with a monthly trigger.
 
 ## Datasets used
 

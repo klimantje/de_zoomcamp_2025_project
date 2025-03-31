@@ -4,6 +4,8 @@ Since the data format has changed over the years, we do some renaming of columns
 Files are downloaded and then uploaded to gcs in parquet in partitioned folders.
 Loading and cleaning of bike rental locations from https://tfl.gov.uk/tfl/syndication/feeds/cycle-hire/livecyclehireupdates.xml
 These are also uploaded as parquet to gcs.
+
+Run with python ingest.py {trigger_date} to load only s3 files modified after you trigger date.
 """
 
 
