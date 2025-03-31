@@ -1,10 +1,32 @@
-Welcome to your new dbt project!
+Welcome to the bike rentals dbt project!
 
-### Using the starter project
+In this dbt project we ingest and transform bike journeys from London and enrich them with bike rental location data.
 
-Try running the following commands:
-- dbt run
-- dbt test
+## DBT project structure
+
+![dbt_flow](../assets/images/dbt-dag.png)
+
+
+We took a layered approach according to dbt best practices.
+
+- Sources: two external bigquery tables, one for journeys and one for locations
+- Staging layer: Both sources are cleaned, fields are casted and renamed
+- Intermediate layer: Journeys and locations are joined to create one big table
+- Marts: We create a table of journey statistics per month
+
+Also, staging and intermediate tables for journeys are:
+
+- incremental to avoid recalculating the full table every time.
+- partitioned by ride_started timestamp (by day) as this is a dimension we will often filter on.
+
+
+### To run this dbt project
+
+The following commands are useful:
+
+- `dbt run` to create the tables
+- `dbt test` to run the tests
+- `dbt docs generate` & `dbt docs serve` to see the documentation
 
 
 ### Resources:

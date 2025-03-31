@@ -10,8 +10,13 @@ Data pipeline for the data engineering zoomcamp project
     - [DBT](#dbt)
     - [Kestra](#kestra)
   - [Datasets used](#datasets-used)
-  - [Setup and running the project yourself](#setup-and-running-the-project-yourself)
+  - [Setup](#setup)
     - [GCP setup](#gcp-setup)
+    - [If you want to run the scripts separately](#if-you-want-to-run-the-scripts-separately)
+    - [Kestra](#kestra-1)
+  - [Running the pipeline](#running-the-pipeline)
+      - [Running all parts separately](#running-all-parts-separately)
+      - [Running the flow in kestra](#running-the-flow-in-kestra)
   - [Next steps and improvements](#next-steps-and-improvements)
 
 
@@ -33,11 +38,17 @@ Bike journey data is enriched with bike rental locations data to provide insight
 
 ### Architecture overview:
 
-TODO: insert diagram
+![architecture](./assets/images/architecture.drawio.png)
 
 ### Terraform
 
-We used terraform as IAC to set up the GCS bucket, Bigquery dataset and external tables for the raw source data.
+We used terraform as IAC to set up the 
+
+- GCS bucket
+- Bigquery dataset
+- external tables for the raw source data.
+  
+The external journey table is partitioned according to the hive-style partitioning of the source data in the bucket.
 
 ### GCP
 
@@ -49,11 +60,18 @@ We used terraform as IAC to set up the GCS bucket, Bigquery dataset and external
 
 DBT is used to structure the data transformations in BigQuery. 
 
-The DBT project is explained more [here](./bike_rentals/README.md)
+The DBT project, including setup and partitioning of tables is explained more [here](./bike_rentals/README.md)
 
 ### Kestra
 
 The whole data pipeline from ingestion to transformations is orchestrated via Kestra.
+
+
+![kestra](assets/images/kestra.png)
+  
+First the repository is cloned, then the python ingestion task runs and lastly the dbt project is built creating the transformed tables.
+
+The flow is scheduled with a monthly trigger and only s3 data 
 
 ## Datasets used
 
@@ -62,30 +80,94 @@ We used the open [dataset](https://cycling.data.tfl.gov.uk/) which is provided b
 More in detail, we used the journey data which can be found under the `usage-stats` prefix in the public s3 bucket `s3://cycling.data.tfl.gov.uk`.
 Secondly, the [live feed data](https://tfl.gov.uk/tfl/syndication/feeds/cycle-hire/livecyclehireupdates.xml) of bike locations is ingested to enrich and complete the journey data.
 
-## Setup and running the project yourself
+## Setup
 
 Disclaimer: tested on MAC, not Windows.
 
-- Clone this repository
-- Create a virtual environment `virtualenv --clear .venv` 
-- Activate and install dependencies `source .venv/bin/activate` & `pip install -r requirements.txt`
-- Alternatively, if you prefer running this in a docker container or via VSCode devcontainer, use the included `devcontainer.json`
+
+> [!TIP]
+> It is important to set the right environment variables. 
+> An `.env_template` is provided for this. You need to rename this to `.env` and fill with your own variables.\
+> Some of those can be filled after setting up the service account.
+> You can load the environment variables by running `source .env` in the command line.
+
+To start: Clone this repository `git clone https://github.com/klimantje/de_zoomcamp_2025_project.git`
 
 ### GCP setup
 
-- Create a GCP project and service account
-- Make sure you store the service account json under `.creds\gcp_creds.json`
-- Install terraform 
+- Create a GCP project and service account:
+  - The service account must have google cloud storage and bigquery permissions
+- Make sure you store the service account json locally, e.g. `.creds/gcp_creds.json`
+- This is also the location that goes into the `GOOGLE_APPLICATION_CREDENTIALS` parameter in `.env`
+- Install [terraform](https://developer.hashicorp.com/terraform/install)
 - Create the bucket, bigquery dataset and external table for the source data with `terraform apply`
+
+
+In the terraform file, make sure to replace with your own bucket and 
 
 Alternatively, you can do the above manually in your GCP console.
 
+
+### If you want to run the scripts separately
+
+- Create a virtual environment `python -m venv --clear .venv` (or similar on your machine)
+- Activate and install dependencies `source .venv/bin/activate` & `pip install -r requirements.txt`
+- Alternatively, if you prefer running this in a docker container or via VSCode devcontainer, use the included `devcontainer.json`
+- Make sure environment variables are set: fill the `.env_template` and rename to `.env`. Then `source .env` will set the environment variables. 
+
+### Kestra
+
+Kestra needs access to the google credentials as well. Therefore we also set `GOOGLE_APPLICATION_CREDENTIALS` in the docker compose.
+
+Make sure the volume mapping refers to your local credential folder if you put that somewhere else than `.creds/gcp_creds.json`
+
+In the docker-compose file we refer to the env_file that kestra has to load. In this, we need to put the 
+
+## Running the pipeline
+
+#### Running all parts separately
+
+When running manually, there are the following steps:
+
+Perform these in the root of this git repo on your machine:- 
+
+- `python ingest.py` will clean and process the files and upload to gcs in a partitioned way (by file modified day)
+  
+![alt text](assets/images/buckets.png)
+
+- `cd bike_rentals` brings you to the dbt project
+- `dbt run` will run the dbt transformations
+- `dbt run --full-refresh` will run non incrementally
+- `dbt docs generate` && `dbt docs serve` will show you the documentation and tests defined.
+
+
+The looker dashboard is available [here](https://lookerstudio.google.com/reporting/fd3e4b28-a73f-4fdf-b12e-177f75b2c0f7)
+
+![looker](assets/images/looker_1.png)
+
+![looker_2](assets/images/looker_2.png)
+
+
+#### Running the flow in kestra
+
+The pipeline is orchestrated through kestra. 
+
+Start kestra by `docker compose up`.
+
+Import the [flow](flows/dbt_bq_flow.yml)
+
+The flow is scheduled to be triggered monthly and will by default only load data from since last trigger.
+
+To load all the data, use the [backfill](https://kestra.io/docs/concepts/backfill) option in kestra.
 
 ## Next steps and improvements
 
 - Currently the pipeline, although using mostly GCP is running from local. 
   - It would be good to deploy this to a Cloud VM.
   - Something like transferservice can be used to transfer the raw files to GCS and perform all the processing there.
+- Several parts can be refactored:
+  - The way we set up kestra 
+  - Usage of more variables, less hardcoding
 - The bike data can be further enriched with e.g. weather data to provide better insights.
 - There is also still a lot of other data feeds available on TFL which can be used to extend the pipeline.
 - The bike location data is actually streaming, but now only used to periodically update the bike locations.

@@ -6,6 +6,8 @@ with source as (
         {{ adapter.quote("id") }} as bike_point_id,
         {{ adapter.quote("name") }} as location_name,
         {{ adapter.quote("terminalName") }} as location_id,
+        CAST( {{ adapter.quote("long") }} AS FLOAT64) as longitude,
+        CAST( {{ adapter.quote("lat") }} AS FLOAT64) as lattitude,
         ST_GEOGPOINT(CAST( {{ adapter.quote("long") }} AS FLOAT64) , CAST( {{ adapter.quote("lat") }} AS FLOAT64)) as geo_location,
         CAST( {{ adapter.quote("installed") }} AS BOOL) as is_installed,
         {{ adapter.quote("locked") }} as is_locked,

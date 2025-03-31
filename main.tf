@@ -9,7 +9,7 @@ terraform {
 
 provider "google" {
 # Credentials only needs to be set if you do not have the GOOGLE_APPLICATION_CREDENTIALS set
-    credentials = ".creds/gcp_creds.json"
+    # credentials = ".creds/gcp_creds.json"
 }
 
 resource "google_storage_bucket" "data-lake-bucket" {

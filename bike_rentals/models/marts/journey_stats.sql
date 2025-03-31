@@ -3,7 +3,6 @@ with journeys as (
 )
 
 select 
-
 start_station_id,
 start_station,
 end_station_id,
@@ -14,4 +13,4 @@ avg(trip_distance_in_meters) as average_trip_distance,
 avg(trip_duration_mins) as average_trip_duration,
 count(rental_id) as total_monthly_trips,
 from journeys
-group by 1,2,3,4,5,6
+group by 1,2,3,4,5,6 

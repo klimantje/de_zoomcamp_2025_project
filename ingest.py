@@ -1,3 +1,12 @@
+""""
+Loading and cleaning of journey data from s3://cycling.data.tfl.gov.uk
+Since the data format has changed over the years, we do some renaming of columns and cleaning of milliseconds vs seconds with duckdb.
+Files are downloaded and then uploaded to gcs in parquet in partitioned folders.
+Loading and cleaning of bike rental locations from https://tfl.gov.uk/tfl/syndication/feeds/cycle-hire/livecyclehireupdates.xml
+These are also uploaded as parquet to gcs.
+"""
+
+
 # %%
 import duckdb
 import boto3
@@ -12,11 +21,8 @@ from lxml import etree
 from datetime import datetime
 import argparse
 
-
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".creds/gcp_creds.json"
-GCP_BUCKET = "bikes_rental_zc"
+GCP_BUCKET = os.environ["GCP_BUCKET"]
 GCP_JOURNEYS_PREFIX = "raw/journeys"
-# GCP_JOURNEYS_PREFIX = "test/journeys"
 GCP_LOCATIONS_PREFIX = "raw/locations/locs.parquet"
 
 def parse_date(date_str):
@@ -35,7 +41,6 @@ def get_files_dict():
         Prefix="usage-stats",
     )
     return response["Contents"]
-
 
 columns_mapping = {
     "bike_number": "bike_id",
@@ -86,7 +91,10 @@ def clean_file(logger, file_path: str, parquet_path: str = None):
 
 # %%
 def clean_and_write_files(logger, trigger_date='2020-01-01'):
-    """Clean files which arrived after trigger date and upload to gcs as parquet"""
+    """
+    Clean files which arrived after trigger date and upload to gcs as parquet
+    If no date is provided it will run as of 2020-01-01.
+    """
     pattern = re.compile(r"usage-stats/.*Journey.*Data.*.csv")
     files_dict = get_files_dict()
     for file in files_dict:

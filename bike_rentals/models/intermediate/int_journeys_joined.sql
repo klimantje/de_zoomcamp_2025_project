@@ -5,8 +5,8 @@ Fix erroneous location id: sometimes it maps to bike_point id, sometimes to loca
 {{
  config(
    materialized = 'incremental',
-   incremental_strategy = 'insert_overwrite',
    unique_key='rental_id',
+   incremental_strategy = 'insert_overwrite',
    partition_by = {
      'field': 'ride_started', 
      'data_type': 'timestamp',
@@ -16,7 +16,9 @@ Fix erroneous location id: sometimes it maps to bike_point id, sometimes to loca
 }}
 
 
-with journeys as (select * from {{ ref("stg_tfl_journeys")}}),
+with journeys as (
+  select * from {{ ref("stg_tfl_journeys")}} 
+  ),
 locations as (select * from {{ ref("stg_tfl_locations")}}),
 journeys_start as
 (select 
@@ -31,7 +33,9 @@ journeys.end_station,
 COALESCE(locations.location_id, journeys.start_station_id) as start_station_id, 
 COALESCE(locations.location_name, journeys.start_station) as start_station,
 locations.bike_point_id as start_bike_point_id, 
-locations.geo_location as start_geo_location
+locations.geo_location as start_geo_location,
+locations.longitude as start_longitude,
+locations.lattitude as start_lattitude
 
 from 
 journeys left join locations
@@ -51,10 +55,14 @@ journeys_start.start_station_id,
 journeys_start.start_station,
 journeys_start.start_bike_point_id,
 journeys_start.start_geo_location,
+journeys_start.start_longitude,
+journeys_start.start_lattitude,
 COALESCE(locations.location_id, journeys_start.end_station_id) as end_station_id, 
 COALESCE(locations.location_name, journeys_start.end_station) as end_station,
 locations.bike_point_id as end_bike_point_id, 
-locations.geo_location as end_geo_location 
+locations.geo_location as end_geo_location,
+locations.longitude as end_longitude,
+locations.lattitude as end_lattitude
 from journeys_start
 left join locations
 on (journeys_start.end_station_id = locations.location_id
@@ -79,7 +87,12 @@ end_bike_point_id,
 end_geo_location,
 ROUND(ST_DISTANCE(start_geo_location, end_geo_location) ) as trip_distance_in_meters
 from journeys_complete
+{% if is_incremental() %}
 
+-- recalculate latest day's data + previous
+-- NOTE: The _dbt_max_partition variable is used to introspect the destination table
+where date(ride_started) >= date_sub(date(_dbt_max_partition), interval 1 month)
+{% endif %}
 
 
 

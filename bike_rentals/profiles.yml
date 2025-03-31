@@ -1,26 +1,10 @@
-bike_rentals:
-  outputs:
-    dev:
-      type: duckdb
-      path: ../data/dev.duckdb
-      schema: bikes
-      threads: 1
-
-    prod:
-      type: duckdb
-      path: ../data/prod.duckdb
-      schema: bikes
-      threads: 4
-
-  target: dev
-
 gcp:
   target: dev
   outputs:
     dev:
       type: bigquery
       method: service-account
-      project: dezoomcamp2025-454617
-      dataset: bike_rentals
+      project: '{{ env_var("GCP_PROJECT_ID")}}'
+      dataset: '{{ env_var("BIGQUERY_DATASET")}}'
       threads: 4 # Must be a value of 1 or greater
-      keyfile: ../.creds/gcp_creds.json
+      keyfile: '{{ env_var("GOOGLE_APPLICATION_CREDENTIALS") }}'
