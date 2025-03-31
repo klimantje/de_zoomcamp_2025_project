@@ -31,8 +31,6 @@ services:
 
   kestra:
     image: kestra/kestra:latest
-    # env_file:
-    #   - .creds/.env_encoded
     pull_policy: always
     user: "root"
     command: server standalone
@@ -47,6 +45,8 @@ services:
       GCP_BUCKET: ${GCP_BUCKET}
       BIGQUERY_DATASET: ${BIGQUERY_DATASET}
       KESTRA_CONFIGURATION: |
+        variables:
+          globals
         datasources:
           postgres:
             url: jdbc:postgresql://postgres:5432/kestra
@@ -54,6 +54,11 @@ services:
             username: kestra
             password: k3str4
         kestra:
+          variables:
+            globals:
+              google_application_credentials: /.creds/gcp_creds.json
+              gcp_bucket: ${GCP_BUCKET}
+              bigquery_dataset: ${BIGQUERY_DATASET}
           server:
             basicAuth:
               enabled: false
@@ -82,11 +87,7 @@ services:
               watch:
                 enabled: true
                 paths:
-                  - ./flows
-                  - flows
                   - /local_flows
-                  - /Users/ai49st/Developer/de_zoomcamp_2025_project/flows
-                  - /app/storage/company/_files/
     ports:
       - "8081:8080"
     depends_on:
