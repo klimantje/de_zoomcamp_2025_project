@@ -22,16 +22,17 @@ Data pipeline for the data engineering zoomcamp project
 
 ## Problem description
 
-This project sets up a datapipeline to analyse Santander bike rentals.
+This project sets up a datapipeline to analyse London bike rentals.
 
 We used the open [dataset](https://cycling.data.tfl.gov.uk/) which is provided by TfL (Transport London) under a permissive [license](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service)
 
 Bike journey data is enriched with bike rental locations data to provide insights into the following:
 
-- Duration and distance of bike trips
+- Electrical bikes rise
 - Popular stations
 - Seasonal patterns
-- Rise of electrical bikes
+- Distance and duration of rides
+
 
 ## Technologies used
 
