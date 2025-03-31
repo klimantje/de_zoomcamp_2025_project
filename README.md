@@ -67,6 +67,8 @@ DBT is used to structure the data transformations in BigQuery.
 
 The DBT project, including setup and partitioning of tables is explained more [here](./bike_rentals/README.md)
 
+The documentation can be found [here](https://klimantje.github.io/de_zoomcamp_2025_project/)
+
 ### Kestra
 
 The whole data pipeline from ingestion to transformations is orchestrated via Kestra.

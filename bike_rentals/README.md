@@ -19,6 +19,7 @@ Also, staging and intermediate tables for journeys are:
 - incremental to avoid recalculating the full table every time.
 - partitioned by ride_started timestamp (by day) as this is a dimension we will often filter on.
 
+The documentation is published [here](https://klimantje.github.io/de_zoomcamp_2025_project/)
 
 ### To run this dbt project
 
