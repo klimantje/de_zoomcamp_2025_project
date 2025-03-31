@@ -4,9 +4,6 @@ pyarrow
 ipykernel
 sqlalchemy
 # psycopg2
-dlt[duckdb]
-dlt[filesystem]
-dlt[gs]
 dbt-core
 dbt-bigquery
 sqlfluff-templater-dbt
