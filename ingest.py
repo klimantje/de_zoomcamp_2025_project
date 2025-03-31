@@ -13,7 +13,7 @@ from datetime import datetime
 import argparse
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".creds/gcp_creds.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ".creds/gcp_creds.json"
 GCP_BUCKET = "bikes_rental_zc"
 GCP_JOURNEYS_PREFIX = "raw/journeys"
 # GCP_JOURNEYS_PREFIX = "test/journeys"
