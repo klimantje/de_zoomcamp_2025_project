@@ -1,7 +1,7 @@
 # London bike rentals pipeline
 Data pipeline for the data engineering zoomcamp project
 
-- [de\_zoomcamp\_2025\_project](#de_zoomcamp_2025_project)
+
   - [Problem description](#problem-description)
   - [Technologies used](#technologies-used)
     - [Architecture overview:](#architecture-overview)
