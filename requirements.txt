@@ -10,3 +10,4 @@ sqlfluff-templater-dbt
 nbstripout
 boto3
 lxml
+duckdb
