@@ -24,7 +24,8 @@ tasks:
           - python ingest.py {{
             trigger.date ?? execution.startDate }}
         env:
-          - GCP_BUCKET: bikes_rental_zc
+          GCP_BUCKET: "{{ globals['gcp-bucket'] }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "{{ globals['google-application-credentials'] }}"
 
       - id: dbt
         type: io.kestra.plugin.dbt.cli.DbtCLI
@@ -34,6 +35,10 @@ tasks:
         projectDir: bike_rentals
         commands:
           - dbt build --profiles-dir bike_rentals --project-dir bike_rentals 
+        env:
+          GCP_BUCKET: "{{ globals['gcp-bucket'] }}"
+          GOOGLE_APPLICATION_CREDENTIALS: "{{ globals['google-application-credentials'] }}"
+          BIGQUERY_DATASET: "{{ globals['bigquery-dataset'] }}"
 
 triggers:
   - id: schedule
