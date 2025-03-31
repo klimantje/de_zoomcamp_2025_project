@@ -163,7 +163,7 @@ The pipeline is orchestrated through kestra.
 
 Start kestra by `docker compose up`.
 
-Import the [flow](flows/dbt_bq_flow.yml)
+Import the [flow](flows/dbt_bq_flow.yml) in kestra.
 
 The flow is scheduled to be triggered monthly and will by default only load data from since last trigger.
 
