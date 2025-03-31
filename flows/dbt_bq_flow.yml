@@ -1,0 +1,41 @@
+id: bike_rentals_flow
+namespace: zoomcamp
+
+tasks:
+  - id: ingest_and_transform
+    type: io.kestra.plugin.core.flow.WorkingDirectory
+    tasks:
+      - id: clone_repository
+        type: io.kestra.plugin.git.Clone
+        url: https://github.com/klimantje/de_zoomcamp_2025_project
+        branch: feature/loading_data
+        username: "{{ secret('GITHUB_USER') }}"
+        password: "{{ secret('GITHUB_PAT') }}"
+      
+      - id: ingestion
+        type: io.kestra.plugin.scripts.python.Commands
+        namespaceFiles:
+          enabled: true
+        taskRunner:
+          type: io.kestra.plugin.scripts.runner.docker.Docker
+        containerImage: python:slim
+        warningOnStdErr: false
+        beforeCommands:
+          - pip install -r requirements.txt
+        commands:
+          - python ingest.py {{
+            trigger.date ?? execution.startDate }}
+
+      - id: dbt
+        type: io.kestra.plugin.dbt.cli.DbtCLI
+        taskRunner:
+          type: io.kestra.plugin.scripts.runner.docker.Docker
+        containerImage: ghcr.io/kestra-io/dbt-bigquery:latest
+        projectDir: bike_rentals
+        commands:
+          - dbt build --profiles-dir bike_rentals --project-dir bike_rentals 
+
+triggers:
+  - id: schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "@monthly"

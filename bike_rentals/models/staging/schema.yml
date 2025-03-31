@@ -1,0 +1,119 @@
+models:
+  - name: stg_tfl_journeys
+    description: Rental bike journeys from 2020 till now in London
+    columns:
+      - name: rental_id
+        description: Unique identifier of the bike rental
+        tests:
+          - not_null
+          - unique
+        data_type: string
+      - name: bike_id
+        description: Unique identifier of the bike
+        data_type: string
+      - name: bike_model
+        description: Identifies the type of bike rented
+        tests:
+          - accepted_values:
+              values:
+                - CLASSIC
+                - PBSC_EBIKE
+                - UNKNOWN
+        data_type: string
+      - name: start_station_id
+        description: Unique identifier of the start station
+        data_type: string
+      - name: start_station
+        description: Name of the start station
+        data_type: string
+      - name: end_station_id
+        description: Unique identifier of the end station
+        data_type: string
+      - name: end_station
+        description: Unique identifier of the end station
+        data_type: string
+      - name: ride_started
+        description: Start timestamp of the ride
+        tests:
+          - not_null
+        data_type: timestamp
+      - name: ride_ended
+        description: End timestamp of the ride
+        tests:
+          - not_null
+        data_type: timestamp
+      - name: total_duration_ms
+        description: Duration of the ride in milliseconds
+        data_type: string
+      - name: start_date
+        description: Raw start date string
+        data_type: string
+        quote: true
+      - name: end_date
+        description: Raw end date string
+        data_type: string
+        quote: true
+  - name: stg_tfl_locations
+    description: Formatted location data for bike rental points
+    columns:
+      - name: bike_point_id
+        description: Unique bike point identifier
+        data_type: int64
+        quote: true
+      - name: location_name
+        description: Bike point name
+        data_type: string
+        quote: true
+      - name: location_id
+        description: Unique identifier of the bike point, corresponds to journeys
+        data_type: int64
+        quote: true
+      - name: is_installed
+        description: Indicates whether the bike point is active
+        data_type: boolean
+        quote: true
+      - name: is_locked
+        description: Indicates whether the bike point is locked
+        data_type: boolean
+        quote: true
+      - name: installed_at
+        description: Timestamp when the bike point was opened
+        data_type: timestamp
+        quote: true
+      - name: removed_at
+        description: Timestamp when the bike point was removed
+        data_type: timestamp
+        quote: true
+      - name: is_temporary
+        description: Indicates whether this is a temporary bike point
+        data_type: boolean
+        quote: true
+      - name: number_of_bikes
+        description: Number of available bikes at moment of update
+        data_type: int64
+        quote: true
+      - name: number_of_standard_bikes
+        description: Number of available standard bikes at moment of update
+        data_type: int64
+        quote: true
+      - name: number_of_ebikes
+        description: Number of available e-bikes at moment of update
+        data_type: int64
+        quote: true
+      - name: number_of_empty_docks
+        description: Number of empty docks at moment of update
+        data_type: int64
+        quote: true
+      - name: number_of_docks
+        description: Total numer of docks at this bike point
+        data_type: int64
+        quote: true
+      - name: last_updated_at
+        description: Timestamp when this table was updated
+        data_type: timestamp
+        quote: true
+      - name: geo_location
+        data_type: geography
+        quote: true
+        data_tests:
+          - not_null

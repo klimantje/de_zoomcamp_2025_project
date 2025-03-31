@@ -1,0 +1,55 @@
+sources:
+  - name: tfl
+    schema: bike_rentals
+    tables:
+      - name: raw_journeys  
+        description: Rental bike journeys from 2020 till now in London
+        columns:
+          - name: rental_id
+            description: Unique identifier of the bike rental
+          - name: bike_id
+            description: Unique identifier of the bike
+          - name: bike_model
+            description: Identifies the type of bike rented
+          - name: start_station_id
+            description: Unique identifier of the start station
+          - name: start_station
+            description: Name of the start station
+          - name: end_station_id
+            description: Unique identifier of the end station
+          - name: end_station
+            description: Unique identifier of the end station
+          - name: start_date
+            description: Start timestamp of the ride
+          - name: end_date
+            description: End timestamp of the ride
+          - name: total_duration_ms
+            description: Duration of the ride in milliseconds
+      - name: raw_locations
+        description: Rental bike locations info
+        columns:
+          - name: id
+            description: Unique id of the bike point
+          - name: name
+            description: Name of the bike point
+          - name: terminalName
+            description: Numerical identifier for the bike point
+          - name: lat
+            description: Latitude
+          - name: lon
+            description: Longitude
+          - name: installed
+          - name: locked
+          - name: installDate
+          - name: removalDate
+          - name: temporary
+          - name: nbBikes
+          - name: nbStandardBikes
+          - name: nbEBikes
+            description: Available number of ebikes at moment of update.
+          - name: nbEmptyDocks
+            description: Availabel number of docks at moment of update.
+          - name: nbDocks
+            description: Total amount of docks in this location
+          - name: last_updated
+            description: Unix timestamp when the feed was last updated

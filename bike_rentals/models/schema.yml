@@ -1,0 +1,9 @@
+macros:
+  - name: string_to_timestamp
+    description: > 
+      A macro to convert different format strings to timestamps. 
+      Supports "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M", "%Y/%m/%d"
+    arguments:
+      - name: column_name
+        type: string
+        description: The name of the column you want to convert

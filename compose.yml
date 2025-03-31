@@ -1,0 +1,104 @@
+volumes:
+  postgres-data:
+    driver: local
+  kestra-data:
+    driver: local
+  flows:
+    driver: local
+
+
+services:
+  devcontainer:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspaces:cached      
+    command: sleep infinity
+  postgres:
+    image: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: kestra
+      POSTGRES_USER: kestra
+      POSTGRES_PASSWORD: k3str4
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  kestra:
+    image: kestra/kestra:latest
+    # env_file:
+    #   - .creds/.env_encoded
+    pull_policy: always
+    user: "root"
+    command: server standalone
+    volumes:
+      - ./kestra-data:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/tmp/kestra-wd:/tmp/kestra-wd
+      - /Users/ai49st/Developer/de_zoomcamp_2025_project/flows:/local_flows
+      - ~/.creds:/.creds
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /.creds/gcp_creds.json
+      GCP_BUCKET: ${GCP_BUCKET}
+      BIGQUERY_DATASET: ${BIGQUERY_DATASET}
+      KESTRA_CONFIGURATION: |
+        datasources:
+          postgres:
+            url: jdbc:postgresql://postgres:5432/kestra
+            driverClassName: org.postgresql.Driver
+            username: kestra
+            password: k3str4
+        kestra:
+          server:
+            basicAuth:
+              enabled: false
+              username: "admin@kestra.io" # it must be a valid email address
+              password: kestra
+          repository:
+            type: postgres
+          storage:
+            type: local
+            local:
+              basePath: "/app/storage"
+          queue:
+            type: postgres
+          tasks:
+            tmpDir:
+              path: /tmp/kestra-wd/tmp
+          url: http://localhost:8080/
+          pluginDefaults:
+          - type: io.kestra.plugin.jdbc.postgresql
+            values:
+              url: jdbc:postgresql://postgres:5432
+              username: kestra
+              password: k3str4
+          micronaut:
+            io:
+              watch:
+                enabled: true
+                paths:
+                  - ./flows
+                  - flows
+                  - /local_flows
+                  - /Users/ai49st/Developer/de_zoomcamp_2025_project/flows
+                  - /app/storage/company/_files/
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_started
+      devcontainer:
+        condition: service_started
+
+  pgadmin: 
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8080:80"

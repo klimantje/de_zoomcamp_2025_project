@@ -1,0 +1,13 @@
+pandas
+jupyter 
+pyarrow
+ipykernel
+sqlalchemy
+# psycopg2
+dbt-core
+dbt-bigquery
+sqlfluff-templater-dbt
+nbstripout
+boto3
+lxml
+duckdb

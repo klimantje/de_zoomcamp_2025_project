@@ -172,3 +172,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+.creds/*
+!.creds/.gitkeep
+*.duckdb
+data/*
+!data/.gitkeep
+notebooks/.dlt/secrets.toml
+*.parquet
